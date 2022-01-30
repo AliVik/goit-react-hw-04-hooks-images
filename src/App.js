@@ -1,26 +1,25 @@
-import React, { Component } from "react";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-import { Toaster, toast } from "react-hot-toast";
-import { animateScroll as scroll } from "react-scroll";
-import errorStyle from "./helpers/general_styles/ErrorText.module.css";
-import css from "./helpers/general_styles/GalleryBox.module.css";
-import img from "./helpers/general_styles/LargeImages.module.css";
-import Searchbar from "./components/Searchbar";
-import Loader from "./components/Loader";
-import GetImagesFromApi from "./helpers/GetImagesFromAPI";
-import mapImagesFromAPI from "./helpers/mapImagesFromApi";
-import ImageGallery from "./components/ImageGallery";
-import Button from "./components/Button";
-import ModalForm from "./components/Modal";
+import React, { Component } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
+import { animateScroll as scroll } from 'react-scroll';
+import errorStyle from './helpers/general_styles/ErrorText.module.css';
+import css from './helpers/general_styles/GalleryBox.module.css';
+import img from './helpers/general_styles/LargeImages.module.css';
+import Searchbar from './components/Searchbar';
+import Loader from './components/Loader';
+import GetImagesFromApi from './helpers/GetImagesFromAPI';
+import mapImagesFromAPI from './helpers/mapImagesFromApi';
+import ImageGallery from './components/ImageGallery';
+import Button from './components/Button';
+import ModalForm from './components/Modal';
 
 class App extends Component {
   state = {
-    searchName: "",
+    searchName: '',
     images: [],
     page: 1,
     isLoading: false,
     error: null,
-    largeImageURL: "",
+    largeImageURL: '',
     openedModal: false,
   };
   async componentDidUpdate(_, prevState) {
@@ -50,7 +49,7 @@ class App extends Component {
   scrollToBottom = () => {
     scroll.scrollToBottom();
   };
-  handleFormData = (data) => {
+  handleFormData = data => {
     this.setState({ searchName: data.formInput });
   };
 
@@ -71,7 +70,7 @@ class App extends Component {
     }
   };
 
-  getClickedImage = (largeImageURL) => {
+  getClickedImage = largeImageURL => {
     this.setState({ largeImageURL, openedModal: true });
   };
 
