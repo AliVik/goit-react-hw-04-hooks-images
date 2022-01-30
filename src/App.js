@@ -59,8 +59,8 @@ export default function App() {
   };
 
   const onLoadMoreClick = () => {
-    setPage(prevPage => prevPage + 1);
     setIsLoading(true);
+    setPage(prevPage => prevPage + 1);
   };
 
   const getClickedImage = largeImageURL => {
