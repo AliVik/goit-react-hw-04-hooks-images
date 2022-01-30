@@ -1,7 +1,10 @@
+import { nanoid } from 'nanoid';
+
 export default function mapImagesFromAPI(array) {
-  return array.map((hit) => {
+  return array.map(hit => {
+    const myId = nanoid();
     return {
-      id: hit.id,
+      id: myId,
       webformatURL: hit.previewURL,
       largeImageURL: hit.largeImageURL,
     };
