@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { animateScroll as scroll } from 'react-scroll';
 import errorStyle from './helpers/general_styles/ErrorText.module.css';
@@ -12,100 +12,86 @@ import ImageGallery from './components/ImageGallery';
 import Button from './components/Button';
 import ModalForm from './components/Modal';
 
-class App extends Component {
-  state = {
-    searchName: '',
-    images: [],
-    page: 1,
-    isLoading: false,
-    error: null,
-    largeImageURL: '',
-    openedModal: false,
-  };
-  async componentDidUpdate(_, prevState) {
-    let { searchName } = this.state;
+export default function App() {
+  const [searchName, setSearchName] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [largeImageURL, setLargeImageURL] = useState('');
+  const [openedModal, setOpenedModal] = useState(false);
 
-    if (prevState.searchName !== searchName && searchName) {
-      this.setState({ isLoading: true, images: [] });
+  useEffect(() => {
+    if (!searchName) {
+      return;
+    }
+
+    const handleImagesFromAPI = async () => {
       try {
-        const imagesArr = await GetImagesFromApi(searchName);
+        setIsLoading(true);
+        const imagesArr = await GetImagesFromApi(searchName, page);
         if (imagesArr.hits.length > 0) {
-          this.setState({
-            images: mapImagesFromAPI(imagesArr.hits),
-          });
+          setImages(prevImages => [
+            ...prevImages,
+            ...mapImagesFromAPI(imagesArr.hits),
+          ]);
         } else {
           toast(`There is no results with ${searchName.toUpperCase()}`);
           return;
         }
       } catch (error) {
         if (error.response || error.request) {
-          this.setState({ error });
+          setError(error);
         }
       } finally {
-        this.setState({ isLoading: false });
+        setIsLoading(false);
+        scrollToBottom();
       }
-    }
-  }
-  scrollToBottom = () => {
+    };
+    handleImagesFromAPI();
+  }, [searchName, page]);
+
+  const scrollToBottom = () => {
     scroll.scrollToBottom();
   };
-  handleFormData = data => {
-    this.setState({ searchName: data.formInput });
+  const handleFormData = data => {
+    setSearchName(data);
   };
 
-  onLoadMoreClick = async () => {
-    let { page, searchName, images } = this.state;
-    this.setState({
-      page: (page += 1),
-    });
-
-    try {
-      const moreImages = await GetImagesFromApi(searchName, page);
-      this.setState({
-        images: [...images, ...mapImagesFromAPI(moreImages.hits)],
-      });
-      this.scrollToBottom();
-    } catch (error) {
-      console.log(error);
-    }
+  const onLoadMoreClick = () => {
+    setPage(prevPage => prevPage + 1);
+    setIsLoading(true);
   };
 
-  getClickedImage = largeImageURL => {
-    this.setState({ largeImageURL, openedModal: true });
+  const getClickedImage = largeImageURL => {
+    setLargeImageURL(largeImageURL);
+    setOpenedModal(true);
   };
-
-  toggleModal = () => {
-    this.setState(({ openedModal }) => ({ openedModal: !openedModal }));
+  const toggleModal = () => {
+    setOpenedModal(!openedModal);
   };
-
-  render() {
-    const { isLoading, images, error, openedModal, largeImageURL } = this.state;
-
-    return (
-      <>
-        {error && (
-          <p className={errorStyle.ErrorText}>Ups, something went wrong =(</p>
+  return (
+    <>
+      {error && (
+        <p className={errorStyle.ErrorText}>Ups, something went wrong =(</p>
+      )}
+      {!error && <Searchbar onFormSubmit={handleFormData} />}
+      <div className={css.Box}>
+        {!error && (
+          <ImageGallery images={images} onImageClick={getClickedImage} />
         )}
-        {!error && <Searchbar onFormSubmit={this.handleFormData} />}
-        <div className={css.Box}>
-          {!error && !isLoading && (
-            <ImageGallery images={images} onImageClick={this.getClickedImage} />
-          )}
-          {!error && !isLoading && images.length > 0 && (
-            <Button onLoadBtnClick={this.onLoadMoreClick} />
-          )}
-          {isLoading && <Loader onLoad={isLoading} />}
-        </div>
-        {openedModal && (
-          <ModalForm onClose={this.toggleModal}>
-            <img src={largeImageURL} alt="" className={img.LargeImages} />
-          </ModalForm>
+        {!error && !isLoading && images.length > 0 && (
+          <Button onLoadBtnClick={onLoadMoreClick} isDynamic={true} />
         )}
+        {isLoading && <Loader onLoad={isLoading} />}
+      </div>
+      {openedModal && (
+        <ModalForm onClose={toggleModal}>
+          <img src={largeImageURL} alt="" className={img.LargeImages} />
+        </ModalForm>
+      )}
 
-        <Toaster />
-      </>
-    );
-  }
+      <Toaster />
+    </>
+  );
 }
-
-export default App;
