@@ -1,0 +1,12 @@
+.LoaderBox {
+  max-width: 100px;
+  margin: auto;
+  margin-top: 250px;
+}
+
+.LoadingText {
+  font-weight: bold;
+  margin-bottom: 0;
+  margin-left: 10px;
+  color: #fff;
+}

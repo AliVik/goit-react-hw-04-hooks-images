@@ -1,0 +1,11 @@
+.GalleryItem {
+  list-style: none;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.GalleryImage {
+  display: block;
+  width: 390px;
+  height: 260px;
+}
