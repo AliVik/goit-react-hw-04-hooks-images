@@ -57,6 +57,7 @@ export default function App() {
   const handleFormData = data => {
     setSearchName(data);
     setImages([]);
+    setPage(1);
   };
 
   const onLoadMoreClick = () => {
